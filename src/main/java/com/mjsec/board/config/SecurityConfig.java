@@ -1,7 +1,8 @@
 package com.mjsec.board.config;
 
+import com.mjsec.board.filter.JwtFilter;
 import com.mjsec.board.filter.LoginFilter;
-import com.mjsec.board.util.JWTUtil;
+import com.mjsec.board.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,9 +23,9 @@ import java.util.Collections;
 @EnableWebSecurity
 public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final JWTUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JwtUtil jwtUtil) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
     }
@@ -54,14 +55,13 @@ public class SecurityConfig {
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated());
         http
-                .addFilterBefore(new JWTUtil(jwtUtil), LoginFilter.class);
+                .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
         http
-                .addFilter(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        return http.build();
         http
                 .cors((corsCustomizer ->corsCustomizer.configurationSource(new CorsConfigurationSource() {
                     @Override
@@ -75,7 +75,7 @@ public class SecurityConfig {
                         return configuration;
                     }
                 })));
-
+        return http.build();
 
 
     }

@@ -2,7 +2,7 @@ package com.mjsec.board.filter;
 
 import com.mjsec.board.domain.UserEntity;
 import com.mjsec.board.Security.CustomUserDetails;
-import com.mjsec.board.util.JWTUtil;
+import com.mjsec.board.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,9 +14,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-public class JwtFilter {
-    private final JWTUtil jwtUtil;
-    public JwtFilter(JWTUtil jwtUtil) {
+public class JwtFilter  extends OncePerRequestFilter {
+    private final JwtUtil jwtUtil;
+    public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
@@ -44,7 +44,7 @@ public class JwtFilter {
         userEntity.setRole(role);
 
         CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
         filterChain.doFilter(request, response);
     }

@@ -1,9 +1,8 @@
 package com.mjsec.board.filter;
 
 import com.mjsec.board.Security.CustomUserDetails;
-import com.mjsec.board.util.JWTUtil;
+import com.mjsec.board.util.JwtUtil;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,9 +17,9 @@ import java.util.Iterator;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
-    private final JWTUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
@@ -30,7 +29,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String username=obtainUsername(request);
         String password=obtainPassword(request);
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, null);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
         return authenticationManager.authenticate(authToken);
     }
     @Override
